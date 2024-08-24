@@ -14,17 +14,17 @@ This project performs atmospheric correction on hyperspectral images, transformi
 ## Introduction
 Atmospheric correction is a crucial step in remote sensing that adjusts the data collected from satellites or airborne sensors to account for atmospheric effects. This project demonstrates how to:
 
-Load hyperspectral image data.
-Apply atmospheric correction to convert radiance values to reflectance.
-Visualize corrected reflectance data as images.
+- Load hyperspectral image data.
+- Apply atmospheric correction to convert radiance values to reflectance.
+- Visualize corrected reflectance data as images.
 
 ## Requirements
 Before running the code, ensure you have the following installed:
 
-Python 3.7 or later
-NumPy
-Matplotlib
-Spectral Python (spectral)
+- Python 3.7 or later
+- NumPy
+- Matplotlib
+- Spectral Python (spectral)
 
 ## Installation
 To get started, clone this repository and install the necessary dependencies.
