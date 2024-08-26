@@ -102,4 +102,4 @@ To see this code in action, run the provided example scripts in the examples fol
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the DJSCE, Mumbai. All rights are reserved. Reproduction, distribution, or publication of this repository is permitted only with the explicit consent of the authorized members.
