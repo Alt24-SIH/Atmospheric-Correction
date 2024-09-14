@@ -1,4 +1,4 @@
-![download](https://github.com/user-attachments/assets/5dbe0cd7-37c6-456a-ab50-ebd435363f8c)# Hyperspectral Image Atmospheric Correction
+# Hyperspectral Image Atmospheric Correction
 This project performs atmospheric correction on hyperspectral images, transforming radiance values to reflectance values. The corrected reflectance values are then applied to visualize the corrected image.
 
 ## Table of Contents
