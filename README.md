@@ -1,4 +1,4 @@
-# Hyperspectral Image Atmospheric Correction
+![download](https://github.com/user-attachments/assets/5dbe0cd7-37c6-456a-ab50-ebd435363f8c)# Hyperspectral Image Atmospheric Correction
 This project performs atmospheric correction on hyperspectral images, transforming radiance values to reflectance values. The corrected reflectance values are then applied to visualize the corrected image.
 
 ## Table of Contents
@@ -115,7 +115,8 @@ Performing Atmospheric Correction: Using values from atmospheric correction calc
 Visualization: The corrected image data is visualized using matplotlib, allowing for analysis of how the atmospheric correction alters the image.
 
 ## Examples
-To see this code in action, run the provided example scripts in the examples folder. These scripts demonstrate loading data, performing corrections, and visualizing results.
+![download](https://github.com/user-attachments/assets/a768fd49-7339-4842-9248-fc75f7b63d88)
+The complete example is given in Atmospheric_Correction_Final.ipynb
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
