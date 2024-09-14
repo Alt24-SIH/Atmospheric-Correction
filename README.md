@@ -25,6 +25,8 @@ Before running the code, ensure you have the following installed:
 - NumPy
 - Matplotlib
 - Spectral Python (spectral)
+- GDAL
+- Rasterio
 
 ## Installation
 To get started, clone this repository and install the necessary dependencies.
@@ -84,7 +86,7 @@ with rasterio.open(
         dst.write(corrected_reflectance[band_index, :, :], band_index + 1)
 ```
 
-5. Visualizing Corrected Images
+4. Visualizing Corrected Images
 The corrected images can be visualized either as RGB composites or single-band images.
 
 RGB Composite:
