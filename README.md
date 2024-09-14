@@ -32,66 +32,83 @@ To get started, clone this repository and install the necessary dependencies.
 ```bash
 git clone https://github.com/Alt24-SIH/Atmospheric-Correction.git
 cd hyperspectral-atmospheric-correction
-pip install -r requirements.txt
+pip install spectral
+pip install gdal
+pip install pyopengl
+pip install rasterio
+pip install matplotlib numpy
 ```
 ## Usage
 1. Load Hyperspectral Image Data
 The radiance data and corresponding header files are loaded using custom functions.
 
 ```python
-radiance_file = "path_to_your_radiance_file"
-hdr_file = "path_to_your_hdr_file"
-radiance_data = read_radiance_file(radiance_file, hdr_file)
+img = spectral.envi.open(r"D:\SIH stuff\f100506t01p00r07rdn_b\f100506t01p00r07rdn_b_sc01_ort_img.hdr", r"D:\SIH stuff\f100506t01p00r07rdn_b\f100506t01p00r07rdn_b_sc01_ort_img")
+img_data = img.load() 
 ```
 2. Atmospheric Correction
 Atmospheric correction is performed by calculating the corrected reflectance values for each band of the image.
 
 ```python
-corrected_reflectance = np.zeros_like(radiance_data, dtype=np.float32)
+for index, wavelength in enumerate(wavelengths):
+    band_data = img_data[: ,: , index]
+    
+    params = atmos_params[wavelength/1000]
+    path_radiance = params['atmospheric_intrinsic_radiance']
+    transmittance_up = params['transmittance_up']
+    transmittance_down = params['transmittance_down']
+    diffuse_solar_irradiance = params['diffuse_solar_irradiance']
+    direct_solar_irradiance = params['direct_solar_irradiance']
 
-for b in range(bands):
-    if b < len(L_path) and b < len(E_sun) and b < len(T_total):
-        if not E_sun[b] * T_total[b] == 0:
-            corrected_reflectance[b, :, :] = (np.pi * (radiance_data[b, :, :] - L_path[b])) / (E_sun[b] * T_total[b])
-        else:
-            corrected_reflectance[b, :, :] = (np.pi * (radiance_data[b, :, :] - L_path[b]))
-
-corrected_reflectance = np.clip(corrected_reflectance, 0, 1)
+    corrected_band = (np.pi * (band_data - path_radiance) * d**2) / (transmittance_up * (direct_solar_irradiance * np.cos(solar_zenith) * transmittance_down + diffuse_solar_irradiance))
+    corrected_reflectance[:, :, index] = corrected_band
 ```
-3. Visualizing Corrected Images
+
+3. Storing the corrected image usin rasterio
+
+```python
+output_path = r"D:\SIH stuff\f100506t01p00r07rdn_b\outputs\atmos_correct_1.tif"
+corrected_reflectance = corrected_reflectance.astype(np.float32)
+
+with rasterio.open(
+    output_path,
+    'w',
+    driver='GTiff',
+    height=corrected_reflectance.shape[1],
+    width=corrected_reflectance.shape[2],
+    count=corrected_reflectance.shape[0],
+    dtype=corrected_reflectance.dtype,
+    crs='EPSG:4326'
+) as dst:
+    for band_index in range(corrected_reflectance.shape[0]):
+        dst.write(corrected_reflectance[band_index, :, :], band_index + 1)
+```
+
+5. Visualizing Corrected Images
 The corrected images can be visualized either as RGB composites or single-band images.
 
 RGB Composite:
 
 ```python
-rgb_bands = [30, 20, 10]  # Example bands for RGB
-rgb_corrected_image = get_rgb_composite(corrected_image_normalized, rgb_bands)
+with rasterio.open(output_path) as src:
+    red_band = src.read(30)
+    green_band = src.read(19)
+    blue_band = src.read(11)
 
-plt.figure(figsize=(10, 10))
-plt.imshow(rgb_corrected_image)
-plt.title('Corrected RGB Composite Image')
+op_rgb_image = np.dstack((red_band, green_band, blue_band))
+
+op_rgb_image = op_rgb_image.astype(np.float32)
+op_rgb_image = (op_rgb_image - op_rgb_image.min()) / (op_rgb_image.max() - op_rgb_image.min())
+plt.subplot(1, 2, 2)
+plt.imshow(op_rgb_image)
+plt.title("RGB Equivalent of Corrected Reflectance")
 plt.axis('off')
-plt.show()
 ```
-Single Band:
 
-```python
-band_number = 30  # Example band number
-
-corrected_band_image = corrected_image[band_number, :, :]
-corrected_band_image_normalized = (corrected_band_image - corrected_band_image.min()) / (corrected_band_image.max() - corrected_band_image.min())
-
-plt.figure(figsize=(10, 10))
-plt.imshow(corrected_band_image_normalized, cmap='gray')
-plt.colorbar()
-plt.title(f'Corrected Reflectance - Band {band_number}')
-plt.axis('off')
-plt.show()
-```
 ## Methodology
-Reading Hyperspectral Data: The read_radiance_file function reads binary hyperspectral image data based on header information.
+Reading Hyperspectral Data: The spectral.envi.open function reads hyperspectral image data based on header information.
 
-Performing Atmospheric Correction: Using values from atmospheric correction calculations (L_path, E_sun, T_total), the code calculates reflectance values for each band.
+Performing Atmospheric Correction: Using values from atmospheric correction calculations (L_path, E_sun, T_up, T_down, E_diffuse), the code calculates reflectance values for each band.
 
 Visualization: The corrected image data is visualized using matplotlib, allowing for analysis of how the atmospheric correction alters the image.
 
